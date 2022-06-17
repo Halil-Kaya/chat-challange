@@ -2,11 +2,12 @@ import { BaseError } from '@errors/base.error';
 import { ErrorMessage } from '@errors/error.message';
 import { ErrorStatus } from '@errors/error.status';
 import { LoggerMiddleware } from '@middlewares/logger.middleware';
+import { AuthModule } from "@modules/auth/auth.module";
+import { UserModule } from "@modules/user/user.module";
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_FILTER } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from "@source/app/app.controller";
 import { AllExceptionsFilter } from '@source/app/core/filters/all.exceptions.filter';
 import { AppMode } from '@source/config/app.mode';
 import developmentConfiguration from '@source/config/development.config';
@@ -45,8 +46,10 @@ const configurationFile = (() => {
       }),
       inject: [ConfigService],
     }),
+    UserModule,
+    AuthModule
 	],
-	controllers: [AppController],
+	controllers: [],
 	providers: [
 		{
 			provide: APP_FILTER,

@@ -4,7 +4,7 @@ export default () => ({
 	URL_ROOT: '/api',
 	PORT: '3032',
   //MONGO_CONNECTION_STRING: process.env.DB_URL,//mongodb://localhost:27017
-  MONGO_CONNECTION_STRING: "mongodb://localhost:27017",
+  MONGO_CONNECTION_STRING: "mongodb://localhost:27017/chat_app",
 	JWT_SECRET: 'R6sVBN0PHKT3sLdmXpjAxJMPXhuDnyrsccWqmpgu7qw',
 	JWT_EXPIRES: '30d',
 	JWT_ALGORITHM: 'HS256',

@@ -13,6 +13,10 @@ export interface ResponseInterface {
 	meta: MetaInterface;
 }
 
+export enum DefaultResponse {
+  OK = "OK"
+}
+
 namespace ResponseHelper {
 	export const set = (data: any, meta: MetaInterface | any = null): any => {
 		return <ResponseInterface>{
