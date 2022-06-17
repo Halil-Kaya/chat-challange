@@ -1,0 +1,68 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "es2017",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "incremental": true,
+        "skipLibCheck": true,
+        "strictNullChecks": false,
+        "noImplicitAny": false,
+        "strictBindCallApply": false,
+        "forceConsistentCasingInFileNames": false,
+        "noFallthroughCasesInSwitch": false,
+        "paths": {
+            "@controllers/*": [
+                "src/app/controllers/*"
+            ],
+            "@interfaces/*": [
+                "src/app/interfaces/*"
+            ],
+            "@models/*": [
+                "src/app/models/*"
+            ],
+            "@modules/*": [
+                "src/app/modules/*"
+            ],
+            "@admin/*": [
+                "src/app/modules/admin/*"
+            ],
+            "@services/*": [
+                "src/app/services/*"
+            ],
+            "@templates/*": [
+                "src/app/templates/*"
+            ],
+            "@guards/*": [
+                "src/app/core/guards/*"
+            ],
+            "@decorators/*": [
+                "src/app/core/decorators/*"
+            ],
+            "@helpers/*": [
+                "src/app/core/helpers/*"
+            ],
+            "@i18n/*": [
+                "src/app/core/i18n/*"
+            ],
+            "@middlewares/*": [
+                "src/app/core/middlewares/*"
+            ],
+            "@pipes/*": [
+                "src/app/core/pipes/*"
+            ],
+            "@errors/*": [
+                "src/app/core/errors/*"
+            ],
+            "@source/*": [
+                "src/*"
+            ]
+        }
+    }
+}

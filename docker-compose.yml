@@ -1,0 +1,24 @@
+version: "3"
+services:
+  chat_app:
+    depends_on:
+      - db
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "3032:3032"
+    environment:
+      - DB_URL=mongodb://db_mongo
+
+  db:
+    image: mongo
+    container_name: db_mongo
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongodata:
