@@ -3,6 +3,7 @@ services:
   chat_app:
     depends_on:
       - db
+      - redis
     restart: always
     build:
       context: ./
@@ -11,6 +12,7 @@ services:
       - "3032:3032"
     environment:
       - DB_URL=mongodb://db_mongo
+      - REDIS_URL=redis://redis_hostname:6379
 
   db:
     image: mongo
@@ -20,5 +22,17 @@ services:
     ports:
       - "27017:27017"
 
+  redis:
+    image: 'bitnami/redis:latest'
+    container_name: redis_hostname
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_PORT_NUMBER=6379
+    volumes:
+      - redisdata:/data/redis
+    ports:
+      - '6379:6379'
+
 volumes:
   mongodata:
+  redisdata:

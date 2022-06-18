@@ -11,4 +11,5 @@ export interface Environment {
 	JWT_REFRESH_TOKEN_SECRET: string;
 	JWT_REFRESH_TOKEN_EXPIRES: string;
 	JWT_REFRESH_ALGORITHM: string;
+  REDIS: string
 }

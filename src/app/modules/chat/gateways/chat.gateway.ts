@@ -48,6 +48,7 @@ export class ChatGateway implements OnGatewayInit,
 
   async handleConnection(client: Socket, ...args: any[]) {
     try {
+      console.log(client.id)
       const user = await this.authService.verifyAndGetUser(client.handshake.headers.authorization);
     } catch(err) {
       if (err.message == ErrorMessage.UNAUTHORIZED) {
