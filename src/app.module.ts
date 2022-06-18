@@ -3,6 +3,7 @@ import { ErrorMessage } from '@errors/error.message';
 import { ErrorStatus } from '@errors/error.status';
 import { LoggerMiddleware } from '@middlewares/logger.middleware';
 import { AuthModule } from "@modules/auth/auth.module";
+import { ChatModule } from "@modules/chat/chat.module";
 import { UserModule } from "@modules/user/user.module";
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -46,6 +47,7 @@ const configurationFile = (() => {
       }),
       inject: [ConfigService],
     }),
+    ChatModule,
     UserModule,
     AuthModule
 	],
