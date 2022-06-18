@@ -21,6 +21,13 @@ export class UserService {
     return this.userModel.findById(_id)
   }
 
+  public async findLoggedInUserById(_id : Types.ObjectId){
+    return this.userModel.findOne({
+      _id : _id,
+      isLoggin : true
+    })
+  }
+
   public async create(createUserDto : CreateUserDto) : Promise<UserDocument>{
     return this.userModel.create(createUserDto)
   }

@@ -11,7 +11,7 @@ async function bootstrap() {
 	});
 	const config = app.get(ConfigService);
 	app.useGlobalFilters(new AllExceptionsFilter());
-	await app.setGlobalPrefix(config.get<string>('URL_ROOT'));
+  await app.setGlobalPrefix(config.get<string>('URL_ROOT'));
 	await app.listen(config.get<number>('PORT'));
 	return app;
 }

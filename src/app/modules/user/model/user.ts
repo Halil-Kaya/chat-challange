@@ -25,12 +25,6 @@ export class User{
     default : false
   })
   isLoggin : boolean
-
-  @Prop({
-    type : Boolean,
-    default : false
-  })
-  isOnline : boolean
 }
 
 export type UserDocument = User & Document;
