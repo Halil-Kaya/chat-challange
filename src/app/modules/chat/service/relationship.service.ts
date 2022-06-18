@@ -38,11 +38,10 @@ export class RelationshipService {
   }
 
   private async isUserAlreadyFriend(currentUser : Types.ObjectId,usertToBeFriendId : Types.ObjectId) : Promise<boolean>{
-    const result = await this.relationshipModel.exists({
+    return  await this.relationshipModel.exists({
       user : currentUser,
       friend : usertToBeFriendId
     })
-    return result;
   }
 
 }

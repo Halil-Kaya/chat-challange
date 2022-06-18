@@ -1,11 +1,12 @@
 import { ErrorMessage } from "@errors/error.message";
 import { WsJwtGuard } from "@guards/ws.guard";
-import { AuthService } from "@modules/auth/service/auth.service";
 import { AddToFriendsDto } from "@modules/chat/dto/add-to-friends.dto";
+import { ChatMessageMakeSeenDto } from "@modules/chat/dto/chat-message-make-seen.dto";
+import { CreateMessageDto } from "@modules/chat/dto/create-message.dto";
 import { RemoveFromFriendsDto } from "@modules/chat/dto/remove-from-friends.dto";
 import { ChatEvent } from "@modules/chat/enums/chat-event.enum";
 import { ChatService } from "@modules/chat/service/chat.service";
-import { RelationshipService } from "@modules/chat/service/relationship.service";
+import { UserDocument } from "@modules/user/model/user";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -14,7 +15,6 @@ import {
   WebSocketServer, SubscribeMessage, ConnectedSocket, MessageBody
 } from "@nestjs/websockets";
 import { Logger, UseGuards, ValidationPipe } from "@nestjs/common";
-import { Types } from "mongoose";
 import { Server, Socket } from "socket.io";
 
 @WebSocketGateway(
@@ -32,9 +32,7 @@ export class ChatGateway implements OnGatewayInit,
   private logger: Logger = new Logger(ChatGateway.name);
 
   constructor(
-    private readonly authService: AuthService,
-    private readonly relationshipService : RelationshipService,
-    private readonly chatService: ChatService,
+    private readonly chatService: ChatService
   ) {
   }
 
@@ -43,62 +41,67 @@ export class ChatGateway implements OnGatewayInit,
   }
 
   @UseGuards(WsJwtGuard)
-  @SubscribeMessage(ChatEvent.ADD_TO_FRIENDS)
-  async handleAddToFriends(@ConnectedSocket() client: Socket,@MessageBody(new ValidationPipe()) addToFriendsDto: AddToFriendsDto): Promise<void> {
+  @SubscribeMessage(ChatEvent.SEND_MESSAGE_TO_SERVER)
+  async handleMessage(@ConnectedSocket() client: Socket, @MessageBody(new ValidationPipe()) createMessageDto: CreateMessageDto) {
     try {
-      addToFriendsDto.userToBeFriendId = new Types.ObjectId(addToFriendsDto.userToBeFriendId)
-      await this.relationshipService.addToFriends(client.data.user._id,addToFriendsDto.userToBeFriendId)
-      client.join(addToFriendsDto.userToBeFriendId.toString())
-      client.emit(ChatEvent.TRANSACTION_SUCCESSFUL)
+      const user = client.data.user;
+      const createdMessage = await this.chatService.createChatMessage(user, createMessageDto);
+      this.server.to(user._id.toString()).emit(ChatEvent.SEND_MESSAGE_TO_CLIENT, createdMessage);
     } catch(err) {
-      this.logger.error(err,'handleAddToFriends');
+      this.logger.error(err, "handleMessage");
+    }
+  }
+
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage(ChatEvent.MESSAGE_MAKE_SEEN_TO_SERVER)
+  async handleSeenMessages(@ConnectedSocket() client: Socket, @MessageBody(new ValidationPipe()) chatMessageMakeSeenDto: ChatMessageMakeSeenDto) {
+    try {
+      await this.chatService.chatMakeSeenToMessages(client, chatMessageMakeSeenDto);
+    } catch(err) {
+      this.logger.error(err, "handleSeenMessages");
+    }
+  }
+
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage(ChatEvent.ADD_TO_FRIENDS)
+  async handleAddToFriends(@ConnectedSocket() client: Socket, @MessageBody(new ValidationPipe()) addToFriendsDto: AddToFriendsDto): Promise<void> {
+    try {
+      await this.chatService.handleAddToFriends(client, addToFriendsDto);
+    } catch(err) {
+      this.logger.error(err, "handleAddToFriends");
     }
   }
 
   @UseGuards(WsJwtGuard)
   @SubscribeMessage(ChatEvent.REMOVE_FROM_FRIENDS)
-  async handleRemoveFromFriends(@ConnectedSocket() client: Socket,@MessageBody(new ValidationPipe()) removeFromFriendsDto: RemoveFromFriendsDto): Promise<void> {
+  async handleRemoveFromFriends(@ConnectedSocket() client: Socket, @MessageBody(new ValidationPipe()) removeFromFriendsDto: RemoveFromFriendsDto): Promise<void> {
     try {
-      removeFromFriendsDto.userToUnfriendId = new Types.ObjectId(removeFromFriendsDto.userToUnfriendId)
-      await this.relationshipService.removeFromFriends(client.data.user._id,removeFromFriendsDto.userToUnfriendId)
-      client.leave(removeFromFriendsDto.userToUnfriendId.toString())
-      client.emit(ChatEvent.TRANSACTION_SUCCESSFUL)
+      await this.chatService.handleRemoveFromFriends(client, removeFromFriendsDto);
     } catch(err) {
-      this.logger.error(err,'handleRemoveFromFriends');
+      this.logger.error(err, "handleRemoveFromFriends");
     }
-  }
-
-  @SubscribeMessage('test')
-  async test(@ConnectedSocket() client: Socket){
-    this.server.to('test_room').emit('test_room_apply',"hello")
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
     try {
-      const user = await this.authService.verifyAndGetUser(client.handshake.headers.authorization);
-      client.data.user = user
-      client.data.userId = user._id.toString()
-      const friendsOfUser = await this.relationshipService.getFriendIdsOfUser(user)
-      friendsOfUser.forEach(friendUser => {
-        client.join(friendUser.user.toString())
-      })
-      this.server.to(user._id.toString()).emit(ChatEvent.ONLINE_EVENT,user)
+      const user: UserDocument = await this.chatService.handleConnectionAndReturnUser(client);
+      this.server.to(user._id.toString()).emit(ChatEvent.ONLINE_EVENT, user);
     } catch(err) {
       if (err.message == ErrorMessage.UNAUTHORIZED) {
         client.emit(ChatEvent.UNAUTHORIZED);
       }
-      this.logger.error(err,'handleConnection');
+      this.logger.error(err, "handleConnection");
       client.disconnect(true);
     }
   }
 
   async handleDisconnect(client: Socket) {
     try {
-      const user = client.data.user
-      this.server.to(user._id.toString()).emit(ChatEvent.DISCONNECT_EVENT,user)
+      const user = client.data.user;
+      this.server.to(user._id.toString()).emit(ChatEvent.DISCONNECT_EVENT, user);
       client.disconnect(true);
     } catch(err) {
-      this.logger.error(err,'handleDisconnect');
+      this.logger.error(err, "handleDisconnect");
     }
   }
 }
