@@ -3,7 +3,7 @@ import { Document, Types } from "mongoose";
 
 @Schema({
   versionKey: false,
-  timestamps: true
+  timestamps: false
 })
 export class User{
   @Prop({
