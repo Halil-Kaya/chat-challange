@@ -37,7 +37,6 @@ export class MessageService {
       seenByList: { $nin: [ currentUser._id ] }
     };
     const paginationInfo = new PaginationInfo();
-    paginationInfo.current = page;
     await this.updatePaginationForQuery(paginationInfo, query);
     const messages = await this.messageModel.find(query)
       .skip(paginationInfo.offset)
@@ -54,9 +53,6 @@ export class MessageService {
     pagination.limit = this.configService.get("PAGINATION_LIMIT");
     pagination.offset = pagination?.offset ? pagination.offset : 0;
     pagination.count = pagination.totalItemCount == pagination.limit ? 0 : Math.floor(pagination.totalItemCount / pagination.limit);
-    pagination.hasNext = pagination.count > pagination.current;
-    pagination.hasPrev = pagination.current > 0;
-    pagination.next = pagination.current + 1;
-    pagination.prev = pagination.current - 1;
+    pagination.hasNext = pagination.count > 0;
   }
 }
