@@ -3,6 +3,8 @@ import { WsJwtGuard } from "@guards/ws.guard";
 import { AddToFriendsDto } from "@modules/chat/dto/add-to-friends.dto";
 import { ChatMessageMakeSeenDto } from "@modules/chat/dto/chat-message-make-seen.dto";
 import { CreateMessageDto } from "@modules/chat/dto/create-message.dto";
+import { FetchUnseenMessagesDto } from "@modules/chat/dto/fetch-unseen-messages.dto";
+import { PaginationToUnseenMessagesDto } from "@modules/chat/dto/pagination-to-unseen-messages.dto";
 import { RemoveFromFriendsDto } from "@modules/chat/dto/remove-from-friends.dto";
 import { ChatEvent } from "@modules/chat/enums/chat-event.enum";
 import { ChatService } from "@modules/chat/service/chat.service";
@@ -83,10 +85,21 @@ export class ChatGateway implements OnGatewayInit,
     }
   }
 
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage(ChatEvent.FETCH_UNSEEN_MESSAGES_TO_SERVER)
+  async handleFetchUnseenMessages(@ConnectedSocket() client: Socket, @MessageBody() paginationToUnseenMessagesDto: PaginationToUnseenMessagesDto) {
+    try {
+      await this.chatService.sendUnseenMessagesToUser(client, paginationToUnseenMessagesDto.page);
+    } catch(err) {
+      this.logger.error(err, "handleFetchUnseenMessages");
+    }
+  }
+
   async handleConnection(client: Socket, ...args: any[]) {
     try {
       const user: UserDocument = await this.chatService.handleConnectionAndReturnUser(client);
       this.server.to(user._id.toString()).emit(ChatEvent.ONLINE_EVENT, user);
+      await this.chatService.sendUnseenMessagesToUser(client);
     } catch(err) {
       if (err.message == ErrorMessage.UNAUTHORIZED) {
         client.emit(ChatEvent.UNAUTHORIZED);

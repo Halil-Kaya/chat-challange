@@ -5,6 +5,7 @@ export interface Environment {
   URL_ROOT: string;
   API_KEY: string;
   PORT: number;
+  PAGINATION_LIMIT: number;
   MONGO_CONNECTION_STRING: string;
   JWT_SECRET: string;
   JWT_EXPIRES: string;

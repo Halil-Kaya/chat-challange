@@ -4,6 +4,7 @@ export default () => ({
   MODE                     : AppMode.DEVELOPMENT,
   URL_ROOT                 : "/api",
   PORT                     : "3032",
+  PAGINATION_LIMIT         : 5,
   MONGO_CONNECTION_STRING  : "mongodb://localhost:27017/chat_app",
   JWT_SECRET               : "R6sVBN0PHKT3sLdmXpjAxJMPXhuDnyrsccWqmpgu7qw",
   JWT_EXPIRES              : "30d",
