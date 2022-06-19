@@ -33,8 +33,7 @@ export class ChatGateway implements OnGatewayInit,
   private logger: Logger = new Logger(ChatGateway.name);
 
   constructor(
-    private readonly chatService: ChatService,
-    private readonly redisCacheService: RedisCacheService
+    private readonly chatService: ChatService
   ) {
   }
 
@@ -84,26 +83,6 @@ export class ChatGateway implements OnGatewayInit,
     }
   }
 
-  @SubscribeMessage("test")
-  async cacheTest(client: Socket) {
-    try {
-      await this.redisCacheService.set("test", [ "afasfaf", "asfasf", "1", "2", "3", "4" ]);
-
-    } catch(err) {
-      this.logger.error(err, "cacheTest");
-    }
-  }
-
-  @SubscribeMessage("test_read")
-  async readFromCache(client: Socket) {
-    try {
-      const result = await this.redisCacheService.get("test");
-      console.log(result);
-    } catch(err) {
-      this.logger.error(err, "readFromCache");
-    }
-  }
-
   async handleConnection(client: Socket, ...args: any[]) {
     try {
       const user: UserDocument = await this.chatService.handleConnectionAndReturnUser(client);
@@ -121,6 +100,7 @@ export class ChatGateway implements OnGatewayInit,
     try {
       const user = client.data.user;
       this.server.to(user._id.toString()).emit(ChatEvent.DISCONNECT_EVENT, user);
+      await this.chatService.clearFriendsFromCache(user);
       client.disconnect(true);
     } catch(err) {
       this.logger.error(err, "handleDisconnect");

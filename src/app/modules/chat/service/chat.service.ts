@@ -11,6 +11,7 @@ import { MessageDocument } from "@modules/chat/model/message";
 import { MessageService } from "@modules/chat/service/message.service";
 import { RelationshipService } from "@modules/chat/service/relationship.service";
 import { UserDocument } from "@modules/user/model/user";
+import { RedisCacheService } from "@modules/utils/redis-cache/service/redis-cache.service";
 import { Injectable } from "@nestjs/common";
 import { Types } from "mongoose";
 import { Socket } from "socket.io";
@@ -20,7 +21,8 @@ export class ChatService {
   constructor(
     private readonly relationshipService: RelationshipService,
     private readonly messageService: MessageService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly redisCacheService: RedisCacheService
   ) {}
 
   public async createChatMessage(user: UserDocument, createMessageDto: CreateMessageDto): Promise<MessageDocument> {
@@ -62,10 +64,14 @@ export class ChatService {
     client.data.user = user;
     client.data.userId = user._id.toString();
     const friendsOfUser = await this.relationshipService.getFriendIdsOfUser(user);
-    friendsOfUser.forEach(friendUser => {
-      client.join(friendUser.user.toString());
-    });
+    const friendIdsOfUser = friendsOfUser.map(friend => friend.user.toString());
+    client.join(friendIdsOfUser);
+    await this.redisCacheService.set(user._id.toString(), friendIdsOfUser);
     return user;
+  }
+
+  public async clearFriendsFromCache(user: UserDocument) {
+    await this.redisCacheService.delete(user._id.toString());
   }
 
 }
