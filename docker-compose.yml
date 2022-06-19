@@ -13,6 +13,9 @@ services:
     environment:
       - DB_URL=mongodb://db_mongo
       - REDIS_URL=redis://redis_hostname:6379
+      - REDIS_HOST=redis_hostname
+      - REDIS_PORT=6379
+      - REDIS_DEFAULT_TTL=1000000
 
   db:
     image: mongo
@@ -28,6 +31,7 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_PORT_NUMBER=6379
+      - REDIS_APPENDFSYNC=always
     volumes:
       - redisdata:/data/redis
     ports:

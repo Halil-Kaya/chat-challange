@@ -7,6 +7,7 @@ import { ChatService } from "@modules/chat/service/chat.service";
 import { MessageService } from "@modules/chat/service/message.service";
 import { RelationshipService } from "@modules/chat/service/relationship.service";
 import { UserModule } from "@modules/user/user.module";
+import { RedisCacheModule } from "@modules/utils/redis-cache/redis-cache.module";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
@@ -23,7 +24,8 @@ import { MongooseModule } from "@nestjs/mongoose";
       }
     ]),
     UserModule,
-    AuthModule
+    AuthModule,
+    RedisCacheModule
   ],
   controllers: [],
   providers  : [ ChatGateway, ChatService, WsJwtGuard, RelationshipService, MessageService ],

@@ -7,6 +7,7 @@ import { RemoveFromFriendsDto } from "@modules/chat/dto/remove-from-friends.dto"
 import { ChatEvent } from "@modules/chat/enums/chat-event.enum";
 import { ChatService } from "@modules/chat/service/chat.service";
 import { UserDocument } from "@modules/user/model/user";
+import { RedisCacheService } from "@modules/utils/redis-cache/service/redis-cache.service";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -32,7 +33,8 @@ export class ChatGateway implements OnGatewayInit,
   private logger: Logger = new Logger(ChatGateway.name);
 
   constructor(
-    private readonly chatService: ChatService
+    private readonly chatService: ChatService,
+    private readonly redisCacheService: RedisCacheService
   ) {
   }
 
@@ -79,6 +81,26 @@ export class ChatGateway implements OnGatewayInit,
       await this.chatService.handleRemoveFromFriends(client, removeFromFriendsDto);
     } catch(err) {
       this.logger.error(err, "handleRemoveFromFriends");
+    }
+  }
+
+  @SubscribeMessage("test")
+  async cacheTest(client: Socket) {
+    try {
+      await this.redisCacheService.set("test", [ "afasfaf", "asfasf", "1", "2", "3", "4" ]);
+
+    } catch(err) {
+      this.logger.error(err, "cacheTest");
+    }
+  }
+
+  @SubscribeMessage("test_read")
+  async readFromCache(client: Socket) {
+    try {
+      const result = await this.redisCacheService.get("test");
+      console.log(result);
+    } catch(err) {
+      this.logger.error(err, "readFromCache");
     }
   }
 
