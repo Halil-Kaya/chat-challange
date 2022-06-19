@@ -21,8 +21,8 @@ export class AuthService {
   ) {}
 
   public async login(loginDto: LoginDto): Promise<SignResponse> {
-    const user = await this.checkAuthAndGetUser(loginDto);
-    const tokens = this.tokenHelper.signUser(user._id);
+    const user: UserDocument = await this.checkAuthAndGetUser(loginDto);
+    const tokens: SignResponse = this.tokenHelper.signUser(user._id);
     user.isLoggin = true;
     await user.save();
     return tokens;
@@ -35,7 +35,7 @@ export class AuthService {
 
   public async createUser(createUserDto): Promise<void> {
     createUserDto.password = await bcrypt.hash(createUserDto.password, 12);
-    const createdUser = await this.userService.create(createUserDto);
+    const createdUser: UserDocument = await this.userService.create(createUserDto);
     checkResult(createdUser,
       CheckType.IS_NULL_OR_UNDEFINED,
       ErrorStatus.BAD_REQUEST,
@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   private async signByJwt(sanitizedUser: SanitizedUser): Promise<UserDocument> {
-    const user = await this.userService.findLoggedInUserById(sanitizedUser._id);
+    const user: UserDocument = await this.userService.findLoggedInUserById(sanitizedUser._id);
     checkResult(user,
       CheckType.IS_NULL_OR_UNDEFINED,
       ErrorStatus.BAD_REQUEST,
@@ -66,12 +66,12 @@ export class AuthService {
   private async checkAuthAndGetUser(loginDto: LoginDto): Promise<UserDocument> {
     const user: UserDocument = await this.userService.getUserWithPasswordByEmail(loginDto.email);
     checkResult(user, CheckType.IS_NULL_OR_UNDEFINED, ErrorStatus.BAD_REQUEST, ErrorMessage.INVALID_CREDENTIALS);
-    const isPasswordMatch = await AuthService.checkPasswordMatch(loginDto.password, user.password);
+    const isPasswordMatch: boolean = await AuthService.checkPasswordMatch(loginDto.password, user.password);
     checkResult(isPasswordMatch, CheckType.IS_FALSE, ErrorStatus.BAD_REQUEST, ErrorMessage.INVALID_CREDENTIALS);
     return user;
   }
 
-  private static checkPasswordMatch(password, realPassword): Promise<string> {
+  private static checkPasswordMatch(password, realPassword): Promise<boolean> {
     return bcrypt.compare(password, realPassword);
   }
 }

@@ -1,35 +1,35 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 
 @Schema({
   versionKey: false,
   timestamps: false
 })
-export class User{
+export class User {
   @Prop({
-    type: String,
-    unique : true,
+    type    : String,
+    unique  : true,
     required: true
   })
   email: string;
 
   @Prop({
-    type: String,
-    select: false,
-    required : false
+    type    : String,
+    select  : false,
+    required: false
   })
   password: string;
 
   @Prop({
-    type : Boolean,
-    default : false
+    type   : Boolean,
+    default: false
   })
-  isLoggin : boolean
+  isLoggin: boolean;
 }
 
 export type UserDocument = User & Document;
 export const UserSchema = SchemaFactory.createForClass(User);
 
 export interface SanitizedUser {
-  _id: Types.ObjectId
+  _id: Types.ObjectId;
 }

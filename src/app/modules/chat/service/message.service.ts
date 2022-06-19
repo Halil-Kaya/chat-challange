@@ -32,7 +32,7 @@ export class MessageService {
   }
 
   public async getUnseenMessagesOfUser(currentUser: UserDocument, friendIdsOfUser: Types.ObjectId[], page: number): Promise<FetchUnseenMessagesDto> {
-    const query = {
+    const query: FilterQuery<MessageDocument> = {
       sender    : { $in: friendIdsOfUser },
       seenByList: { $nin: [ currentUser._id ] }
     };
@@ -49,7 +49,7 @@ export class MessageService {
     };
   }
 
-  private async updatePaginationForQuery(pagination: PaginationInfo, query: FilterQuery<MessageDocument>): Promise<number> {
+  private async updatePaginationForQuery(pagination: PaginationInfo, query: FilterQuery<MessageDocument>): Promise<void> {
     pagination.totalItemCount = await this.messageModel.countDocuments(query);
     pagination.limit = this.configService.get("PAGINATION_LIMIT");
     pagination.offset = pagination?.offset ? pagination.offset : 0;
@@ -58,7 +58,5 @@ export class MessageService {
     pagination.hasPrev = pagination.current > 0;
     pagination.next = pagination.current + 1;
     pagination.prev = pagination.current - 1;
-    return pagination.totalItemCount;
   }
-
 }

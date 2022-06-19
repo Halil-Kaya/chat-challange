@@ -3,7 +3,6 @@ export class PaginationInfo {
   page?: number; // Getirilecek sayfa
   limit?: number; // Getirilecek kayıt sayısı
   totalItemCount?: number; // Toplam kayıt sayısı.
-  itemCount?: number; // Sayfa başı kayıt sayısı.
   count?: number; // Toplam sayfa sayısı.
   current?: number; // Aktif sayfa sayısı.
   hasNext?: boolean; // Sonraki sayfa bayrağı.
