@@ -13,9 +13,8 @@ export default () => ({
   JWT_REFRESH_TOKEN_EXPIRES: "3600d",
   JWT_REFRESH_ALGORITHM    : "HS256",
   REDIS                    : {
-    URL        : process.env.REDIS_URL,
-    HOST       : process.env.REDIS_HOST,
-    PORT       : process.env.REDIS_PORT,
-    DEFAULT_TTL: process.env.REDIS_DEFAULT_TTL
+    URL : process.env.REDIS_URL,
+    HOST: process.env.REDIS_HOST,
+    PORT: process.env.REDIS_PORT
   }
 });

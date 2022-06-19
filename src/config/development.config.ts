@@ -3,9 +3,9 @@ import { AppMode } from "@source/config/app.mode";
 export default () => ({
   MODE                     : AppMode.DEVELOPMENT,
   URL_ROOT                 : "/api",
-  PORT                     : "3032",
+  PORT                     : "3031",
   PAGINATION_LIMIT         : 5,
-  MONGO_CONNECTION_STRING  : "mongodb://localhost:27017/chat_app",
+  MONGO_CONNECTION_STRING  : "mongodb://localhost:27018/chat_app",
   JWT_SECRET               : "R6sVBN0PHKT3sLdmXpjAxJMPXhuDnyrsccWqmpgu7qw",
   JWT_EXPIRES              : "30d",
   JWT_ALGORITHM            : "HS256",
@@ -13,8 +13,8 @@ export default () => ({
   JWT_REFRESH_TOKEN_EXPIRES: "3600d",
   JWT_REFRESH_ALGORITHM    : "HS256",
   REDIS                    : {
-    URL : "redis://localhost:6379",
+    URL : "redis://localhost:6380",
     HOST: "localhost",
-    PORT: 6379
+    PORT: 6380
   }
 });
