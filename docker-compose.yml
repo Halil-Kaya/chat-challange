@@ -9,13 +9,12 @@ services:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - "3033:3032"
+      - "3032:3032"
     environment:
       - DB_URL=mongodb://db_mongo
       - REDIS_URL=redis://redis_hostname:6379
       - REDIS_HOST=redis_hostname
       - REDIS_PORT=6379
-      - REDIS_DEFAULT_TTL=1000000
 
   db:
     image: mongo

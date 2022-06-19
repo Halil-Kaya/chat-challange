@@ -11,7 +11,7 @@
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "MODE=DEVELOPMENT nest start",
         "start:dev": "MODE=DEVELOPMENT nest start --watch",
-        "start:stag": "MODE=STAGING nest start --watch",
+        "start:prod": "MODE=PRODUCTION nest start --watch",
         "start:debug": "MODE=DEVELOPMENT nest start --debug --watch",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "jest",

@@ -12,9 +12,7 @@ export class RedisCacheService {
     return this.cache.get<T>(key);
   }
 
-  async set(key,
-    value: any,
-    ttl: number = 0): Promise<any> {
+  async set(key, value: any): Promise<any> {
     return this.cache.set(key, value, { ttl: 0 });
   }
 
