@@ -1,43 +1,35 @@
-version: "3"
+version: "3.5"
 services:
   chat_app:
-    depends_on:
-      - db_service
-      - redis_service
     build:
       context: ./
       dockerfile: Dockerfile
     ports:
       - "3032:3032"
+    depends_on:
+      - db_service
+      - redis_service
     environment:
       - DB_URL=mongodb://db_service
-      - REDIS_URL=redis://redis_service:6370
+      - REDIS_URL=redis://redis_service:6379
       - REDIS_HOST=redis_service
-      - REDIS_PORT=6370
+      - REDIS_PORT=6379
     networks:
       - chat_app_net
 
   db_service:
     image: mongo
-    container_name: db_mongo
     volumes:
       - mongodata:/data/db
     ports:
-      - "27018:27017"
+      - "27017:27017"
     networks:
       - chat_app_net
 
   redis_service:
-    image: "redis:alpine"
-    container_name: redis_hostname
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_PORT_NUMBER=6379
-      - REDIS_APPENDFSYNC=always
-    volumes:
-      - redisdata:/data/redis
+    image: redis
     ports:
-      - "6370:6379"
+      - "6379:6379"
     networks:
       - chat_app_net
 
@@ -46,4 +38,3 @@ networks:
 
 volumes:
   mongodata:
-  redisdata:

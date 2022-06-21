@@ -17,12 +17,12 @@ async function bootstrap() {
   await app.setGlobalPrefix(config.get<string>("URL_ROOT"));
   const redisIoAdapter = new RedisIoAdapter(app);
   await redisIoAdapter.connectToRedis();
+  //Projenin ölçeklenebilir bir yapıya sahip olması gerekiyor o yuzden redis adapter u kullandim.
+  app.useWebSocketAdapter(redisIoAdapter);
   app.useGlobalPipes(new ValidationPipe({
     whitelist           : true,
     forbidNonWhitelisted: true
   }));
-  //Projenin ölçeklenebilir bir yapıya sahip olması gerekiyor o yuzden redis adapter u kullandim.
-  app.useWebSocketAdapter(redisIoAdapter);
   await app.listen(config.get<number>("PORT"));
   return app;
 }
