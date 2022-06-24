@@ -11,8 +11,7 @@ import * as redisStore from "cache-manager-redis-store";
       inject    : [ ConfigService ],
       useFactory: async (configService: ConfigService<Environment>) => ({
         store: redisStore,
-        host : configService.get("REDIS").HOST,
-        port : configService.get("REDIS").PORT
+        url  : configService.get("REDIS").URL
       })
     })
   ],

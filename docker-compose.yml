@@ -11,9 +11,9 @@ services:
       - redis_service
     environment:
       - DB_URL=mongodb://db_service
-      - REDIS_URL=redis://redis_service:6379
+      - REDIS_URL=redis://redis_service
       - REDIS_HOST=redis_service
-      - REDIS_PORT=6379
+      - REDIS_PORT=6380
     networks:
       - chat_app_net
 
@@ -22,14 +22,14 @@ services:
     volumes:
       - mongodata:/data/db
     ports:
-      - "27017:27017"
+      - "27016:27017"
     networks:
       - chat_app_net
 
   redis_service:
     image: redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     networks:
       - chat_app_net
 
